@@ -4,6 +4,7 @@ services:
     container_name: ibp-api
     environment:
       DATABASE_URL: postgresql://ibp:ibp_local_only@postgres:5432/ibp
+      JWT_SECRET: ${JWT_SECRET:-local-development-secret-change-me}
     depends_on:
       postgres:
         condition: service_healthy
