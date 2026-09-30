@@ -1,0 +1,52 @@
+services:
+  api:
+    build: ./app
+    container_name: ibp-api
+    environment:
+      DATABASE_URL: postgresql://ibp:ibp_local_only@postgres:5432/ibp
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "8000"
+    networks:
+      - labnet
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ibp-postgres
+    environment:
+      POSTGRES_DB: ibp
+      POSTGRES_USER: ibp
+      POSTGRES_PASSWORD: ibp_local_only
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - pgdata:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ibp -d ibp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - labnet
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: ibp-nginx
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+    networks:
+      - labnet
+
+networks:
+  labnet:
+    driver: bridge
+
+volumes:
+  pgdata:

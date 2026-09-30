@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# VS Code
+.vscode/
+
+# Evidence that may contain sensitive data
+evidence/
+*.pcap
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local test output
+reports/
